@@ -131,7 +131,9 @@ def bestellen(request):
         bestellung.erledigt = True
         bestellung.save()
         
-        bestellung.bestellteartikel_set.all().delete()
+        #diese Zeile verhindert renderingin besttelung.html von Preis gesamt und Menge
+        #bestellung.bestellteartikel_set.all().delete()  
+      
         
         Adresse.objects.create(
             kunde = kunde,

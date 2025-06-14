@@ -16,8 +16,9 @@
             <hr>
              <div class="d-flex">
                 <p class="me-auto fw-bold p-2">Menge: {{bestellung.gesamt_menge}}</p>
-                <p class="fw-bold p-2">Gesamtpreis: {{bestellung.gesamt_summe|floatformat:2}} €</p>
-                <input type="number" class="d-none" id="gesamtpreis" value="{{bestellung.gesamt_summe|floatformat:2}}">
+                <p class="fw-bold p-2">Gesamtpreis: {{ bestellung.gesamt_summe|floatformat:2 }} €</p>
+                    <input type="number" class="d-none" id="gesamtpreis" value="{{ bestellung.gesamt_summe|floatformat:2|cut:',' }}">
+
              </div>
         </div>
     </div>
