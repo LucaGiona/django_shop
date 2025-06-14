@@ -147,4 +147,16 @@ def bestellen(request):
     
     messages.success(request, "Vielen Dank für die Bestellung!")
     return JsonResponse("Bestellung erfolgreich", safe=False)
+
+def bestellung(request, id):
+    bestellung= Bestellung.objects.filter(auftrags_id=id)
+    if bestellung:
+        bestellung = Bestellung.objects.get(auftrags_id=id)
+        artikels  = bestellung.bestellteartikel_set.all()
+        ctx = {"artikels": artikels, "bestellung": bestellung}
+        return render(request, "shop/bestellung.html", ctx)
+    
+    else:
+        return redirect("shop")
+
     

@@ -10,4 +10,5 @@ urlpatterns = [
     path("logout/", views.logoutBenutzer, name="logout"),
     path("reg/", views.regBenutzer, name="reg"),
     path("bestellen/", views.bestellen, name="bestellen"),
+    path("bestellung/<uuid:id>", views.bestellung, name="bestellung"),
 ]
