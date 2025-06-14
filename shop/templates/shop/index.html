@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Techmax</title>
+    <link rel="shortcut icon" href="{% static 'bilder/favicon.png' %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <script>
+        let benutzer='{{request.user}}'
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+       }   
+    const csrftoken = getCookie('csrftoken');
+
+ </script>
+</head>
+<body>
+    {% include "shop/menu.html" %}
+
+
+        <div class="container pt-3">  <!-- sorgt dafür, dass Flash unter navbar sichtbar bleibt -->
+        {% if messages %}
+            <div id="flash-messages-wrapper">
+            {% for message in messages %}
+                <div class="alert {{ message.tags }} flash-alert mb-3" role="alert">
+                {{ message }}
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        </div>
+
+
+
+
+   <div class="container">
+    {% block content %}
+    
+    {% endblock content %}
+   </div>
+    {% include 'shop/footer.html' %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+<script src="{% static 'js/warenkorb.js' %}" defer></script>
+<script>
+  setTimeout(() => {
+    document.querySelectorAll('.flash-alert').forEach(alert => {
+      alert.classList.add('fade-out');
+      setTimeout(() => alert.remove(), 500); // nach Übergang entfernen
+    });
+  }, 3000);
+</script>
+
+</body>
+</html>
