@@ -7,6 +7,7 @@ from django.contrib.auth import login, authenticate, logout
 #from django.contrib.auth.forms import UserCreationForm
 from . forms import EigeneCreationForm
 import uuid
+from django.utils.safestring import mark_safe
 
 # Create your views here.
 
@@ -146,8 +147,8 @@ def bestellen(request):
         
     else:
         print("nicht eingelogt")
-    
-    messages.success(request, "Vielen Dank für die Bestellung!")
+    auftragsURL = str(auftrags_id)
+    messages.success(request, mark_safe("Vielen Dank für Ihre <a href='/bestellung/" + auftragsURL+"'>Bestellung: "+auftragsURL+"</a>"))
     return JsonResponse("Bestellung erfolgreich", safe=False)
 
 def bestellung(request, id):
