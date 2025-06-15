@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from . models import *
 from django.http import JsonResponse
 import json
@@ -8,6 +9,7 @@ from django.contrib.auth import login, authenticate, logout
 from . forms import EigeneCreationForm
 import uuid
 from django.utils.safestring import mark_safe
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
@@ -151,15 +153,16 @@ def bestellen(request):
     messages.success(request, mark_safe("Vielen Dank für Ihre <a href='/bestellung/" + auftragsURL+"'>Bestellung: "+auftragsURL+"</a>"))
     return JsonResponse("Bestellung erfolgreich", safe=False)
 
+@login_required(login_url="login")
 def bestellung(request, id):
-    bestellung= Bestellung.objects.filter(auftrags_id=id)
-    if bestellung:
+    bestellung = Bestellung.objects.get(auftrags_id=id)
+    if bestellung and str(request) == str(bestellung.kunde):
         bestellung = Bestellung.objects.get(auftrags_id=id)
-        artikels  = bestellung.bestellteartikel_set.all()
+        artikels = bestellung.bestellteartikel_set.all()
         ctx = {"artikels": artikels, "bestellung": bestellung}
         return render(request, "shop/bestellung.html", ctx)
-    
     else:
         return redirect("shop")
 
-    
+def fehler404(request, exception):
+    return render(request, "shop/404.html", status=404)

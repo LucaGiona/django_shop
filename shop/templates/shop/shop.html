@@ -7,7 +7,7 @@
        <div class="col mb-3">
          <div class="card h-100" style="max-width: 35rem;">
             {% if artikel.bild %}
-                <img src="{{ artikel.bild.url}}" class="card-img-top" alt="...">
+                <img src="{% static artikel.bild %}" class="card-img-top" alt="...">
             {% else %}
                 <img src="{% static 'bilder/dummy.jpg' %}" class="card-img-top" alt="...">
             {% endif %}

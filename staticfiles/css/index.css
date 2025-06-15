@@ -1,0 +1,13 @@
+.flash-alert {
+  opacity: 1;
+  transition: opacity 2.5s ease-in-out;
+}
+
+.flash-alert.fade-out {
+  opacity: 0;
+}
+
+/* 
+body {
+    background-color: aqua;
+} */

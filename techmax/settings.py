@@ -28,6 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
+
+
 MESSAGE_TAGS = {
     messages.DEBUG: 'alert-secondary',
     messages.INFO: 'alert-info',
@@ -134,6 +137,10 @@ STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
 
-MEDIA_URL = "/bilder/"
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_ROOT = BASE_DIR /"static/bilder"
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+

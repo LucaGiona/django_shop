@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class Kunde(models.Model):
     benutzer = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=200, null=True)
-    email = models.CharField(max_length=200, null=True)
+    email = models.EmailField(max_length=200, null=True)
     
     def __str__(self):
         return str(self.name)
@@ -13,8 +13,9 @@ class Kunde(models.Model):
 class Artikel(models.Model):
      name = models.CharField(max_length=200, null=True)
      beschreibung = models.TextField(null=True, blank=True)
-     preis = models.FloatField()
-     bild = models.ImageField(null=True, blank=True)
+     preis = models.DecimalField(max_digits=6, decimal_places=2)
+     bild = models.ImageField(upload_to="artikelbilder/", null=True, blank=True)
+
      
      def __str__(self):
         return str(self.name)
@@ -24,7 +25,7 @@ class Bestellung(models.Model):
     kunde = models.ForeignKey(Kunde, on_delete=models.SET_NULL, null=True, blank=True)
     bestelldatum = models.DateTimeField(auto_now_add=True)
     erledigt = models.BooleanField(default=False, null=True, blank=True)
-    auftrags_id = models.CharField(max_length=200, null=200)
+    auftrags_id = models.CharField(max_length=200, null=True, blank=True)
     
     def __str__(self):
         return str(self.id)
