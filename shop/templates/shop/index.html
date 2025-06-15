@@ -44,6 +44,11 @@
             return cookieValue;
        }   
     let warenkorb = JSON.parse(getCookie('warenkorb'));
+    if(warenkorb == undefined){
+        warenkorb = {}
+        document.cookie = "warenkorb="+ JSON.stringify(warenkorb) + ";domain;path=/; SameSite=None; Secure"
+    }
+    console.log("Warenkorb: ", warenkorb)
 
  </script>
 </head>

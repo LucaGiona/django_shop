@@ -156,7 +156,7 @@ def bestellen(request):
 @login_required(login_url="login")
 def bestellung(request, id):
     bestellung = Bestellung.objects.get(auftrags_id=id)
-    if bestellung and str(request) == str(bestellung.kunde):
+    if bestellung and str(request.user) == str(bestellung.kunde):
         bestellung = Bestellung.objects.get(auftrags_id=id)
         artikels = bestellung.bestellteartikel_set.all()
         ctx = {"artikels": artikels, "bestellung": bestellung}
