@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from . models import *
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import json
 from django.contrib.auth import login, authenticate, logout
 #from django.contrib.auth.forms import UserCreationForm
@@ -10,6 +10,7 @@ from . forms import EigeneCreationForm
 import uuid
 from django.utils.safestring import mark_safe
 from django.shortcuts import get_object_or_404
+from . viewstool import getGastBestellung, gastCookie
 
 # Create your views here.
 
@@ -29,8 +30,10 @@ def warenkorb(request):
         bestellung, created = Bestellung.objects.get_or_create(kunde=kunde, erledigt=False)
         artikels = bestellung.bestellteartikel_set.all()
     else:
-        artikels = []
-        bestellung = []
+        # cokkie auslesen
+       cookieDaten = gastCookie(request)
+       artikels = cookieDaten["artikels"]
+       bestellung = cookieDaten["bestellung"]
         
     #print(artikels)
     ctx = {"artikels": artikels, "bestellung": bestellung}   
@@ -45,8 +48,10 @@ def kasse(request):
         bestellung, created = Bestellung.objects.get_or_create(kunde=kunde, erledigt=False)
         artikels = bestellung.bestellteartikel_set.all()
     else:
-        artikels = []
-        bestellung = []
+        # cokkie auslesen
+       cookieDaten = gastCookie(request)
+       artikels = cookieDaten["artikels"]
+       bestellung = cookieDaten["bestellung"]
         
     #print(artikels)
     ctx = {"artikels": artikels, "bestellung": bestellung}   
@@ -129,29 +134,37 @@ def bestellen(request):
     if request.user.is_authenticated:
         kunde = request.user.kunde
         bestellung, created = Bestellung.objects.get_or_create(kunde=kunde, erledigt=False)
-        gesamtpreis =float(daten["benutzerDaten"]["gesamtpreis"])
-        bestellung.auftrags_id = auftrags_id
-        bestellung.erledigt = True
-        bestellung.save()
-        
-        #diese Zeile verhindert renderingin besttelung.html von Preis gesamt und Menge
-        #bestellung.bestellteartikel_set.all().delete()  
       
         
-        Adresse.objects.create(
-            kunde = kunde,
-            bestellung = bestellung,
-            adresse=daten["lieferadresse"]["adresse"],
-            plz=daten["lieferadresse"]["plz"],
-            stadt=daten["lieferadresse"]["stadt"],
-            land=daten["lieferadresse"]["land"],
-        )
         
     else:
-        print("nicht eingelogt")
+        kunde, bestellung = getGastBestellung(request, daten)
+        
+    gesamtpreis =float(daten["benutzerDaten"]["gesamtpreis"])
+    bestellung.auftrags_id = auftrags_id
+    bestellung.erledigt = True
+    bestellung.save()
+    
+    #diese Zeile verhindert renderingin besttelung.html von Preis gesamt und Menge
+    #bestellung.bestellteartikel_set.all().delete()  
+    
+    
+    Adresse.objects.create(
+        kunde = kunde,
+        bestellung = bestellung,
+        adresse=daten["lieferadresse"]["adresse"],
+        plz=daten["lieferadresse"]["plz"],
+        stadt=daten["lieferadresse"]["stadt"],
+        land=daten["lieferadresse"]["land"],
+    )
+    
     auftragsURL = str(auftrags_id)
     messages.success(request, mark_safe("Vielen Dank für Ihre <a href='/bestellung/" + auftragsURL+"'>Bestellung: "+auftragsURL+"</a>"))
-    return JsonResponse("Bestellung erfolgreich", safe=False)
+    
+    #return JsonResponse("Bestellung erfolgreich", safe=False)
+    response = HttpResponse("Bestellung erfolgreich")
+    response.delete_cookie("warenkorb")
+    return response
 
 @login_required(login_url="login")
 def bestellung(request, id):
