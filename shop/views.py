@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from . models import *
@@ -11,6 +12,7 @@ import uuid
 from django.utils.safestring import mark_safe
 from django.shortcuts import get_object_or_404
 from . viewstool import getGastBestellung, gastCookie
+from paypal.standard.forms import PayPalPaymentsForm
 
 # Create your views here.
 
@@ -158,8 +160,21 @@ def bestellen(request):
         land=daten["lieferadresse"]["land"],
     )
     
+    paypal_dict = {
+        "business": "sb-uurry43619877@business.example.com",
+        "amount": gesamtpreis,
+        #"item_name": "name of the item",
+        "invoice": auftrags_id,
+        "currency_code": "EUR",
+        "notify_url": request.build_absolute_uri(reverse('paypal-ipn')),  
+        "return": request.build_absolute_uri(reverse('shop')),
+        "cancel_return": request.build_absolute_uri(reverse('shop')),
+       
+    }
+    
+    paypalform = PayPalPaymentsForm(initial=paypal_dict)
     auftragsURL = str(auftrags_id)
-    messages.success(request, mark_safe("Vielen Dank für Ihre <a href='/bestellung/" + auftragsURL+"'>Bestellung: "+auftragsURL+"</a>"))
+    messages.success(request, mark_safe("Vielen Dank für Ihre <a href='/bestellung/" + auftragsURL+"'>Bestellung: "+auftragsURL+"</a><br> Jetzt bezahlen: "+paypalform.render()))
     
     #return JsonResponse("Bestellung erfolgreich", safe=False)
     response = HttpResponse("Bestellung erfolgreich")
